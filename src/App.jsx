@@ -14,7 +14,6 @@ function App() {
   const [selectedLesson, setSelectedLesson] = useState(null)
   const [progress, setProgress] = useState(getProgress())
 
-  // Track page views
   useEffect(() => {
     pageView(view)
   }, [view])
@@ -27,6 +26,25 @@ function App() {
     setSelectedLesson(lesson)
     setView('lesson')
   }
+
+  const navItems = [
+    { key: 'list', label: '课程', icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+        <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>
+        <rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>
+      </svg>
+    )},
+    { key: 'ranking', label: '排名', icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+        <path d="M6 9l6 6 6-6"/>
+      </svg>
+    )},
+    { key: 'profile', label: '我的', icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+      </svg>
+    )},
+  ]
 
   return (
     <div className="min-h-screen bg-cream">
@@ -57,40 +75,25 @@ function App() {
       )}
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-gray-200 z-50">
+      <nav className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-gray-100 z-50 safe-area-bottom">
         <div className="max-w-[480px] mx-auto flex justify-around py-2">
-          <button
-            onClick={() => setView('list')}
-            className={`flex flex-col items-center gap-0.5 px-4 py-1 ${view === 'list' ? 'text-gold' : 'text-ink-dim'}`}
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
-              <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
-            </svg>
-            <span className="text-xs">课程</span>
-          </button>
-          <button
-            onClick={() => setView('ranking')}
-            className={`flex flex-col items-center gap-0.5 px-4 py-1 ${view === 'ranking' ? 'text-gold' : 'text-ink-dim'}`}
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M6 9l6 6 6-6"/>
-            </svg>
-            <span className="text-xs">排名</span>
-          </button>
-          <button
-            onClick={() => setView('profile')}
-            className={`flex flex-col items-center gap-0.5 px-4 py-1 ${view === 'profile' ? 'text-gold' : 'text-ink-dim'}`}
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
-            </svg>
-            <span className="text-xs">我的</span>
-          </button>
+          {navItems.map(item => (
+            <button
+              key={item.key}
+              onClick={() => setView(item.key)}
+              className={`flex flex-col items-center gap-0.5 px-6 py-1.5 rounded-xl transition-all duration-200 ${
+                view === item.key
+                  ? 'text-gold bg-gold-bg'
+                  : 'text-ink-dim hover:text-ink-light'
+              }`}
+            >
+              {item.icon}
+              <span className="text-[10px] font-medium">{item.label}</span>
+            </button>
+          ))}
         </div>
       </nav>
 
-      {/* Safe area for bottom nav */}
       <div className="h-16" />
       <Analytics />
     </div>
