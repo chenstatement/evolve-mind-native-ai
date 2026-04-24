@@ -32,19 +32,6 @@ body {
   position: relative;
 }
 
-.app-container {
-  max-width: 480px;
-  margin: 0 auto;
-  min-height: 100svh;
-  position: relative;
-}
-
-@media (min-width: 481px) {
-  .app-container {
-    box-shadow: 0 0 40px rgba(0, 0, 0, 0.08);
-  }
-}
-
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }

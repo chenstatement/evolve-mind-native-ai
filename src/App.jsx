@@ -16,7 +16,6 @@ function App() {
   const [progress, setProgress] = useState(getProgress())
 
   useEffect(() => {
-    // Check if user is unlocked
     const unlocked = isUnlocked()
     const seenLanding = localStorage.getItem('landing_seen') === 'true'
     if (!unlocked && !seenLanding) {
@@ -61,48 +60,42 @@ function App() {
     )},
   ]
 
-  // Hide bottom nav on landing page
   const showNav = view !== 'landing'
-
-  const isLanding = view === 'landing'
 
   return (
     <div className="min-h-screen bg-cream">
-      {isLanding && (
+      {view === 'landing' && (
         <LandingPage onEnterApp={handleEnterApp} />
       )}
-      {!isLanding && (
-        <div className="app-container">
-          {view === 'list' && (
-            <LessonList
-              progress={progress}
-              onSelect={handleLessonSelect}
-            />
-          )}
-          {view === 'lesson' && selectedLesson && (
-            <LessonDetail
-              lesson={selectedLesson}
-              onBack={() => setView('list')}
-              onComplete={refreshProgress}
-            />
-          )}
-          {view === 'ranking' && (
-            <Ranking progress={progress} onBack={() => setView('list')} />
-          )}
-          {view === 'profile' && (
-            <Profile progress={progress} onBack={() => setView('list')} onAIConfig={() => setView('aiconfig')} onCertificate={() => setView('certificate')} />
-          )}
-          {view === 'aiconfig' && (
-            <AIConfig onBack={() => setView('profile')} />
-          )}
-          {view === 'certificate' && (
-            <Certificate onBack={() => setView('profile')} />
-          )}
+      {view === 'list' && (
+        <LessonList
+          progress={progress}
+          onSelect={handleLessonSelect}
+        />
+      )}
+      {view === 'lesson' && selectedLesson && (
+        <LessonDetail
+          lesson={selectedLesson}
+          onBack={() => setView('list')}
+          onComplete={refreshProgress}
+        />
+      )}
+      {view === 'ranking' && (
+        <Ranking progress={progress} onBack={() => setView('list')} />
+      )}
+      {view === 'profile' && (
+        <Profile progress={progress} onBack={() => setView('list')} onAIConfig={() => setView('aiconfig')} onCertificate={() => setView('certificate')} />
+      )}
+      {view === 'aiconfig' && (
+        <AIConfig onBack={() => setView('profile')} />
+      )}
+      {view === 'certificate' && (
+        <Certificate onBack={() => setView('profile')} />
+      )}
 
-      {/* Bottom Navigation */}
       {showNav && (
         <nav className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-gray-100 z-50 safe-area-bottom">
-          <div className="max-w-[480px] mx-auto flex justify-around py-2">
+          <div className="max-w-5xl mx-auto flex justify-around py-2">
             {navItems.map(item => (
               <button
                 key={item.key}
@@ -123,8 +116,6 @@ function App() {
 
       {showNav && <div className="h-16" />}
       <Analytics />
-        </div>
-      )}
     </div>
   )
 }

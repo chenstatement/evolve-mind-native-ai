@@ -25,11 +25,11 @@ export default function LessonList({ onSelect }) {
   return (
     <div className="min-h-screen bg-cream pb-24">
       {/* Hero */}
-      <div className="relative overflow-hidden bg-ink text-white px-5 pt-8 pb-10">
+      <div className="relative overflow-hidden bg-ink text-white pt-8 pb-10">
         <div className="absolute top-0 right-0 w-64 h-64 bg-gold/10 rounded-full -translate-y-1/2 translate-x-1/2" />
         <div className="absolute bottom-0 left-0 w-40 h-40 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
 
-        <div className="relative">
+        <div className="relative max-w-5xl mx-auto px-5">
           <div className="flex items-center gap-2 mb-3">
             <span className="text-xs font-bold text-ink bg-gold px-2.5 py-1 rounded-full tracking-wide">AI NATIVE</span>
             <span className="text-xs text-white/50">思维训练</span>
@@ -67,7 +67,7 @@ export default function LessonList({ onSelect }) {
       </div>
 
       {/* Content */}
-      <div className="px-4 pt-5 -mt-4">
+      <div className="max-w-5xl mx-auto px-4 pt-5 -mt-4">
         {/* Lock message */}
         {showLockMessage && (
           <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-4 animate-fade-in">
