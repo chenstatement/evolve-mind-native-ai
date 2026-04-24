@@ -1,8 +1,8 @@
 // AI API configuration
 const DEFAULT_CONFIG = {
-  baseURL: localStorage.getItem('ai_base_url') || 'https://api.kimi.com/coding',
+  baseURL: localStorage.getItem('ai_base_url') || 'https://api.deepseek.com/v1',
   apiKey: localStorage.getItem('ai_api_key') || '',
-  model: localStorage.getItem('ai_model') || 'kimi-for-coding'
+  model: localStorage.getItem('ai_model') || 'deepseek-chat'
 }
 
 export function getAIConfig() {

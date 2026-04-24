@@ -29,11 +29,11 @@ export default function AIConfig({ onBack }) {
             type="password"
             value={config.apiKey}
             onChange={(e) => setConfig({ ...config, apiKey: e.target.value })}
-            placeholder="sk-..."
+            placeholder="sk- 或 ds- 开头"
             className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gold"
           />
           <p className="text-xs text-ink-light mt-1">
-            支持 Claude、OpenAI、Kimi 等兼容 OpenAI 格式的 API
+            默认使用 DeepSeek API（兼容 OpenAI 格式）
           </p>
         </div>
 
