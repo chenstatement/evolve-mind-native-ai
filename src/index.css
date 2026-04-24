@@ -3,6 +3,7 @@
 @theme {
   --color-cream: #faf8f5;
   --color-cream-dark: #f5f0e8;
+  --color-cream-darker: #ede8de;
   --color-ink: #2d2d3a;
   --color-ink-light: #6b6b7b;
   --color-ink-dim: #9a9aaa;
@@ -26,15 +27,20 @@ body {
 }
 
 #root {
-  max-width: 480px;
-  margin: 0 auto;
   min-height: 100svh;
   background: var(--color-cream);
   position: relative;
 }
 
+.app-container {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100svh;
+  position: relative;
+}
+
 @media (min-width: 481px) {
-  #root {
+  .app-container {
     box-shadow: 0 0 40px rgba(0, 0, 0, 0.08);
   }
 }

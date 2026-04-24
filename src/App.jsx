@@ -64,36 +64,40 @@ function App() {
   // Hide bottom nav on landing page
   const showNav = view !== 'landing'
 
+  const isLanding = view === 'landing'
+
   return (
     <div className="min-h-screen bg-cream">
-      {view === 'landing' && (
+      {isLanding && (
         <LandingPage onEnterApp={handleEnterApp} />
       )}
-      {view === 'list' && (
-        <LessonList
-          progress={progress}
-          onSelect={handleLessonSelect}
-        />
-      )}
-      {view === 'lesson' && selectedLesson && (
-        <LessonDetail
-          lesson={selectedLesson}
-          onBack={() => setView('list')}
-          onComplete={refreshProgress}
-        />
-      )}
-      {view === 'ranking' && (
-        <Ranking progress={progress} onBack={() => setView('list')} />
-      )}
-      {view === 'profile' && (
-        <Profile progress={progress} onBack={() => setView('list')} onAIConfig={() => setView('aiconfig')} onCertificate={() => setView('certificate')} />
-      )}
-      {view === 'aiconfig' && (
-        <AIConfig onBack={() => setView('profile')} />
-      )}
-      {view === 'certificate' && (
-        <Certificate onBack={() => setView('profile')} />
-      )}
+      {!isLanding && (
+        <div className="app-container">
+          {view === 'list' && (
+            <LessonList
+              progress={progress}
+              onSelect={handleLessonSelect}
+            />
+          )}
+          {view === 'lesson' && selectedLesson && (
+            <LessonDetail
+              lesson={selectedLesson}
+              onBack={() => setView('list')}
+              onComplete={refreshProgress}
+            />
+          )}
+          {view === 'ranking' && (
+            <Ranking progress={progress} onBack={() => setView('list')} />
+          )}
+          {view === 'profile' && (
+            <Profile progress={progress} onBack={() => setView('list')} onAIConfig={() => setView('aiconfig')} onCertificate={() => setView('certificate')} />
+          )}
+          {view === 'aiconfig' && (
+            <AIConfig onBack={() => setView('profile')} />
+          )}
+          {view === 'certificate' && (
+            <Certificate onBack={() => setView('profile')} />
+          )}
 
       {/* Bottom Navigation */}
       {showNav && (
@@ -119,6 +123,8 @@ function App() {
 
       {showNav && <div className="h-16" />}
       <Analytics />
+        </div>
+      )}
     </div>
   )
 }
