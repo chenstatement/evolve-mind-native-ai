@@ -96,32 +96,7 @@ export default function LessonDetail({ lesson, onBack, onComplete }) {
   // Completion screen
   if (section >= sections.length) {
     return (
-      <div className="min-h-screen bg-cream px-5 pt-6 pb-24">
-        <button onClick={onBack} className="text-ink-light text-sm mb-4 flex items-center gap-1">
-          ← 返回课程列表
-        </button>
-        <div className="bg-white rounded-2xl p-8 text-center">
-          <div className="w-20 h-20 bg-gold-bg rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-3xl">🎉</span>
-          </div>
-          <h2 className="text-xl font-bold text-ink mb-2">第{lesson.id}课完成！</h2>
-          <p className="text-ink-light mb-4">你已完成「{lesson.title}」</p>
-          <div className="bg-gold-bg rounded-xl p-4 mb-4">
-            <p className="text-sm text-ink-light">本课得分</p>
-            <p className="text-4xl font-bold text-gold">{score}<span className="text-lg text-ink-light">/10</span></p>
-          </div>
-          {difficulty !== 'standard' && (
-            <div className="bg-amber-50 rounded-xl p-3 mb-4">
-              <p className="text-xs text-amber-700">
-                难度等级：{difficulty === 'advanced' ? '进阶' : '基础'}
-              </p>
-            </div>
-          )}
-          <button onClick={onBack} className="w-full bg-gold text-white font-semibold py-3 rounded-xl">
-            继续下一课
-          </button>
-        </div>
-      </div>
+      <CompletionScreen lesson={lesson} score={score} difficulty={difficulty} onBack={onBack} />
     )
   }
 
@@ -132,7 +107,17 @@ export default function LessonDetail({ lesson, onBack, onComplete }) {
         <div className="flex items-center gap-3 mb-2">
           <button onClick={onBack} className="text-ink-light">←</button>
           <div className="flex-1">
-            <p className="text-xs text-gold font-medium">第{lesson.id}课 · {lesson.category}</p>
+            <div className="flex items-center gap-2 mb-0.5">
+              <p className="text-xs text-gold font-medium">第{lesson.id}课 · {lesson.category}</p>
+              {currentSection && (
+                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-gray-100 text-ink-light">
+                  {currentSection.type === 'story' && '📖 故事'}
+                  {currentSection.type === 'knowledge' && '💡 知识'}
+                  {currentSection.type === 'game' && '🎯 练习'}
+                  {currentSection.type === 'homework' && '✏️ 作业'}
+                </span>
+              )}
+            </div>
             <h1 className="text-lg font-bold text-ink">{lesson.title}</h1>
           </div>
         </div>
@@ -194,10 +179,13 @@ export default function LessonDetail({ lesson, onBack, onComplete }) {
 function StorySection({ section, onNext, onAI }) {
   return (
     <div>
-      <div className="bg-white rounded-xl p-5 mb-4 shadow-sm">
-        <span className="text-xs font-medium text-gold bg-gold-bg px-2 py-0.5 rounded-full">故事 · 案例</span>
-        <h2 className="text-lg font-bold text-ink mt-3 mb-3">{section.title}</h2>
-        <div className="text-ink-light leading-relaxed whitespace-pre-line text-sm">
+      <div className="bg-white rounded-xl p-5 mb-4 shadow-sm border border-gray-50">
+        <div className="flex items-center gap-2 mb-3">
+          <span className="text-lg">📖</span>
+          <span className="text-xs font-medium text-gold bg-gold-bg px-2 py-0.5 rounded-full">故事 · 案例</span>
+        </div>
+        <h2 className="text-lg font-bold text-ink mb-3">{section.title}</h2>
+        <div className="text-ink-light leading-relaxed whitespace-pre-line text-sm border-l-4 border-gold/30 pl-3">
           {section.content}
         </div>
       </div>
@@ -205,10 +193,10 @@ function StorySection({ section, onNext, onAI }) {
         <p className="text-sm text-white/70 mb-2">💡 思考题</p>
         <p className="font-medium">{section.question}</p>
       </div>
-      <button onClick={onAI} className="w-full bg-gold text-white font-semibold py-3 rounded-xl mb-3">
+      <button onClick={onAI} className="w-full bg-gold text-white font-semibold py-3 rounded-xl mb-3 transition-transform active:scale-[0.98]">
         和AI讨论这个问题 →
       </button>
-      <button onClick={onNext} className="w-full bg-white text-ink-light py-3 rounded-xl text-sm">
+      <button onClick={onNext} className="w-full bg-white text-ink-light py-3 rounded-xl text-sm border border-gray-100">
         跳过，继续学习
       </button>
     </div>
@@ -218,12 +206,18 @@ function StorySection({ section, onNext, onAI }) {
 function KnowledgeSection({ section, onNext }) {
   return (
     <div>
-      <span className="text-xs font-medium text-gold bg-gold-bg px-2 py-0.5 rounded-full">核心知识点</span>
-      <h2 className="text-lg font-bold text-ink mt-3 mb-4">{section.title}</h2>
+      <div className="flex items-center gap-2 mb-3">
+        <span className="text-lg">💡</span>
+        <span className="text-xs font-medium text-gold bg-gold-bg px-2 py-0.5 rounded-full">核心知识点</span>
+      </div>
+      <h2 className="text-lg font-bold text-ink mb-4">{section.title}</h2>
       <div className="space-y-4">
         {section.items?.map((item, i) => (
-          <div key={i} className="bg-white rounded-xl p-4 shadow-sm">
-            <h3 className="font-semibold text-ink text-sm mb-2">{item.heading}</h3>
+          <div key={i} className="bg-white rounded-xl p-4 shadow-sm border border-gray-50">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="w-5 h-5 rounded-full bg-gold-bg text-gold text-[10px] font-bold flex items-center justify-center">{i + 1}</span>
+              <h3 className="font-semibold text-ink text-sm">{item.heading}</h3>
+            </div>
             {item.table ? (
               <div className="space-y-2">
                 {item.table.map((row, j) => (
@@ -239,7 +233,7 @@ function KnowledgeSection({ section, onNext }) {
           </div>
         ))}
       </div>
-      <button onClick={onNext} className="w-full bg-gold text-white font-semibold py-3 rounded-xl mt-6">
+      <button onClick={onNext} className="w-full bg-gold text-white font-semibold py-3 rounded-xl mt-6 transition-transform active:scale-[0.98]">
         继续 →
       </button>
     </div>
@@ -247,7 +241,6 @@ function KnowledgeSection({ section, onNext }) {
 }
 
 function GameSection({ section, difficulty, input, setInput, submitted, setSubmitted, onNext }) {
-  // Get difficulty-specific content
   const diffContent = section.difficulty?.[difficulty] || section.difficulty?.standard || {
     description: section.description,
     task: section.task,
@@ -256,36 +249,41 @@ function GameSection({ section, difficulty, input, setInput, submitted, setSubmi
 
   return (
     <div>
-      <span className="text-xs font-medium text-gold bg-gold-bg px-2 py-0.5 rounded-full">互动游戏</span>
-      <h2 className="text-lg font-bold text-ink mt-3 mb-2">{section.title}</h2>
+      <div className="flex items-center gap-2 mb-3">
+        <span className="text-lg">🎯</span>
+        <span className="text-xs font-medium text-gold bg-gold-bg px-2 py-0.5 rounded-full">互动游戏</span>
+      </div>
+      <h2 className="text-lg font-bold text-ink mb-2">{section.title}</h2>
       <p className="text-ink-light text-sm mb-4">{diffContent.description}</p>
 
       {!submitted ? (
-        <div className="bg-white rounded-xl p-4 shadow-sm">
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-50">
           <p className="text-sm text-ink mb-3">{diffContent.task}</p>
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder={diffContent.placeholder}
-            className="w-full h-32 p-3 border border-gray-200 rounded-lg text-sm resize-none focus:outline-none focus:border-gold"
+            className="w-full h-32 p-3 border border-gray-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold transition-all"
           />
           <button
             onClick={() => input.length > 10 && setSubmitted(true)}
             disabled={input.length <= 10}
-            className="w-full bg-gold text-white font-semibold py-3 rounded-xl mt-3 disabled:opacity-50"
+            className="w-full bg-gold text-white font-semibold py-3 rounded-xl mt-3 disabled:opacity-50 transition-transform active:scale-[0.98]"
           >
             提交观察记录
           </button>
         </div>
       ) : (
-        <div className="bg-gold-bg rounded-xl p-4 mb-4">
-          <p className="text-sm text-gold font-medium mb-2">✓ 观察记录已提交</p>
+        <div className="bg-green-50 rounded-xl p-4 mb-4 border border-green-100">
+          <p className="text-sm text-green-700 font-medium mb-2 flex items-center gap-1">
+            <span>✓</span> 观察记录已提交
+          </p>
           <p className="text-xs text-ink-light">{input.slice(0, 100)}...</p>
         </div>
       )}
 
       {submitted && (
-        <button onClick={onNext} className="w-full bg-gold text-white font-semibold py-3 rounded-xl">
+        <button onClick={onNext} className="w-full bg-gold text-white font-semibold py-3 rounded-xl transition-transform active:scale-[0.98]">
           继续 →
         </button>
       )}
@@ -293,8 +291,81 @@ function GameSection({ section, difficulty, input, setInput, submitted, setSubmi
   )
 }
 
+function CompletionScreen({ lesson, score, difficulty, onBack }) {
+  const [displayScore, setDisplayScore] = useState(0)
+  const [confetti, setConfetti] = useState([])
+
+  useEffect(() => {
+    // Count up animation
+    const duration = 800
+    const startTime = Date.now()
+    const timer = setInterval(() => {
+      const elapsed = Date.now() - startTime
+      const progress = Math.min(elapsed / duration, 1)
+      setDisplayScore(Math.round(score * progress))
+      if (progress >= 1) clearInterval(timer)
+    }, 16)
+
+    // Confetti
+    const colors = ['#c9a96e', '#d4b87a', '#f5f0e8', '#2d2d3a', '#6b6b7b', '#9a9aaa']
+    const pieces = Array.from({ length: 30 }, (_, i) => ({
+      id: i,
+      left: `${Math.random() * 100}%`,
+      delay: `${Math.random() * 2}s`,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      size: `${6 + Math.random() * 8}px`,
+    }))
+    setConfetti(pieces)
+
+    return () => clearInterval(timer)
+  }, [score])
+
+  return (
+    <div className="min-h-screen bg-cream px-5 pt-6 pb-24 relative overflow-hidden">
+      {/* Confetti */}
+      {confetti.map((c) => (
+        <div
+          key={c.id}
+          className="confetti"
+          style={{
+            left: c.left,
+            animationDelay: c.delay,
+            backgroundColor: c.color,
+            width: c.size,
+            height: c.size,
+          }}
+        />
+      ))}
+
+      <button onClick={onBack} className="text-ink-light text-sm mb-4 flex items-center gap-1 relative z-10">
+        ← 返回课程列表
+      </button>
+      <div className="bg-white rounded-2xl p-8 text-center border border-gray-50 shadow-sm relative z-10">
+        <div className="w-20 h-20 bg-gold-bg rounded-full flex items-center justify-center mx-auto mb-4">
+          <span className="text-3xl">🎉</span>
+        </div>
+        <h2 className="text-xl font-bold text-ink mb-2">第{lesson.id}课完成！</h2>
+        <p className="text-ink-light mb-4">你已完成「{lesson.title}」</p>
+        <div className="bg-gold-bg rounded-xl p-4 mb-4">
+          <p className="text-sm text-ink-light">本课得分</p>
+          <p className="text-4xl font-bold text-gold">{displayScore}<span className="text-lg text-ink-light">/10</span></p>
+        </div>
+        {difficulty !== 'standard' && (
+          <div className="bg-amber-50 rounded-xl p-3 mb-4">
+            <p className="text-xs text-amber-700">
+              难度等级：{difficulty === 'advanced' ? '进阶' : '基础'}
+            </p>
+          </div>
+        )}
+        <button onClick={onBack} className="w-full bg-gold text-white font-semibold py-3 rounded-xl transition-transform active:scale-[0.98]">
+          继续下一课
+        </button>
+      </div>
+    </div>
+  )
+}
+
 function HomeworkSection({ section, difficulty, input, setInput, submitted, showFeedback, isLoadingFeedback, aiFeedback, onSubmit, onNext }) {
-  // Get difficulty-specific content
   const diffContent = section.difficulty?.[difficulty] || section.difficulty?.standard || {
     tasks: section.tasks,
     prompt: section.prompt
@@ -302,13 +373,16 @@ function HomeworkSection({ section, difficulty, input, setInput, submitted, show
 
   return (
     <div>
-      <span className="text-xs font-medium text-gold bg-gold-bg px-2 py-0.5 rounded-full">练习作业</span>
-      <h2 className="text-lg font-bold text-ink mt-3 mb-2">{section.title}</h2>
-      <div className="bg-white rounded-xl p-4 shadow-sm mb-4">
+      <div className="flex items-center gap-2 mb-3">
+        <span className="text-lg">✏️</span>
+        <span className="text-xs font-medium text-gold bg-gold-bg px-2 py-0.5 rounded-full">练习作业</span>
+      </div>
+      <h2 className="text-lg font-bold text-ink mb-2">{section.title}</h2>
+      <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-50 mb-4">
         <ul className="space-y-2">
           {diffContent.tasks?.map((task, i) => (
             <li key={i} className="text-sm text-ink-light flex items-start gap-2">
-              <span className="text-gold flex-shrink-0">{i + 1}.</span>
+              <span className="w-5 h-5 rounded-full bg-gold-bg text-gold text-[10px] font-bold flex items-center justify-center flex-shrink-0">{i + 1}</span>
               {task}
             </li>
           ))}
@@ -316,18 +390,18 @@ function HomeworkSection({ section, difficulty, input, setInput, submitted, show
       </div>
 
       {!submitted ? (
-        <div className="bg-white rounded-xl p-4 shadow-sm">
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-50">
           <p className="text-sm text-ink mb-3">{diffContent.prompt}</p>
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="写下你的观察和思考..."
-            className="w-full h-32 p-3 border border-gray-200 rounded-lg text-sm resize-none focus:outline-none focus:border-gold"
+            className="w-full h-32 p-3 border border-gray-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold transition-all"
           />
           <button
             onClick={onSubmit}
             disabled={input.length <= 10 || isLoadingFeedback}
-            className="w-full bg-gold text-white font-semibold py-3 rounded-xl mt-3 disabled:opacity-50"
+            className="w-full bg-gold text-white font-semibold py-3 rounded-xl mt-3 disabled:opacity-50 transition-transform active:scale-[0.98]"
           >
             {isLoadingFeedback ? 'AI点评中...' : '提交作业'}
           </button>
@@ -344,10 +418,12 @@ function HomeworkSection({ section, difficulty, input, setInput, submitted, show
           <p className="text-sm text-ink-light">AI思维教练正在点评你的作业...</p>
         </div>
       ) : (
-        <div className="bg-gold-bg rounded-xl p-4 mb-4">
-          <p className="text-sm text-gold font-medium mb-2">✓ 作业已提交</p>
+        <div className="bg-green-50 rounded-xl p-4 mb-4 border border-green-100">
+          <p className="text-sm text-green-700 font-medium mb-2 flex items-center gap-1">
+            <span>✓</span> 作业已提交
+          </p>
           <p className="text-xs text-ink-light">{input.slice(0, 100)}...</p>
-          <button onClick={onNext} className="w-full bg-gold text-white font-semibold py-3 rounded-xl mt-4">
+          <button onClick={onNext} className="w-full bg-gold text-white font-semibold py-3 rounded-xl mt-4 transition-transform active:scale-[0.98]">
             继续 →
           </button>
         </div>

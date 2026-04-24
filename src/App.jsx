@@ -6,13 +6,23 @@ import Ranking from './components/Ranking'
 import Profile from './components/Profile'
 import AIConfig from './components/AIConfig'
 import Certificate from './components/Certificate'
-import { getProgress } from './utils/storage'
+import LandingPage from './components/LandingPage'
+import { getProgress, isUnlocked } from './utils/storage'
 import { pageView } from './utils/analytics'
 
 function App() {
   const [view, setView] = useState('list')
   const [selectedLesson, setSelectedLesson] = useState(null)
   const [progress, setProgress] = useState(getProgress())
+
+  useEffect(() => {
+    // Check if user is unlocked
+    const unlocked = isUnlocked()
+    const seenLanding = localStorage.getItem('landing_seen') === 'true'
+    if (!unlocked && !seenLanding) {
+      setView('landing')
+    }
+  }, [])
 
   useEffect(() => {
     pageView(view)
@@ -25,6 +35,11 @@ function App() {
   const handleLessonSelect = (lesson) => {
     setSelectedLesson(lesson)
     setView('lesson')
+  }
+
+  const handleEnterApp = () => {
+    localStorage.setItem('landing_seen', 'true')
+    setView('list')
   }
 
   const navItems = [
@@ -46,8 +61,14 @@ function App() {
     )},
   ]
 
+  // Hide bottom nav on landing page
+  const showNav = view !== 'landing'
+
   return (
     <div className="min-h-screen bg-cream">
+      {view === 'landing' && (
+        <LandingPage onEnterApp={handleEnterApp} />
+      )}
       {view === 'list' && (
         <LessonList
           progress={progress}
@@ -75,26 +96,28 @@ function App() {
       )}
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-gray-100 z-50 safe-area-bottom">
-        <div className="max-w-[480px] mx-auto flex justify-around py-2">
-          {navItems.map(item => (
-            <button
-              key={item.key}
-              onClick={() => setView(item.key)}
-              className={`flex flex-col items-center gap-0.5 px-6 py-1.5 rounded-xl transition-all duration-200 ${
-                view === item.key
-                  ? 'text-gold bg-gold-bg'
-                  : 'text-ink-dim hover:text-ink-light'
-              }`}
-            >
-              {item.icon}
-              <span className="text-[10px] font-medium">{item.label}</span>
-            </button>
-          ))}
-        </div>
-      </nav>
+      {showNav && (
+        <nav className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-gray-100 z-50 safe-area-bottom">
+          <div className="max-w-[480px] mx-auto flex justify-around py-2">
+            {navItems.map(item => (
+              <button
+                key={item.key}
+                onClick={() => setView(item.key)}
+                className={`flex flex-col items-center gap-0.5 px-6 py-1.5 rounded-xl transition-all duration-200 ${
+                  view === item.key
+                    ? 'text-gold bg-gold-bg'
+                    : 'text-ink-dim hover:text-ink-light'
+                }`}
+              >
+                {item.icon}
+                <span className="text-[10px] font-medium">{item.label}</span>
+              </button>
+            ))}
+          </div>
+        </nav>
+      )}
 
-      <div className="h-16" />
+      {showNav && <div className="h-16" />}
       <Analytics />
     </div>
   )

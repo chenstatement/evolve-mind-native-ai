@@ -1,7 +1,8 @@
 // 批量生成兑换码脚本
-// 用法: node generate-codes.js [--prefix <PREFIX>] [数量] [输出文件]
+// 用法: node generate-codes.js [--prefix <PREFIX>] [--format csv|txt] [数量] [输出文件]
 // 示例: node generate-codes.js 100 ./codes.txt
 //        node generate-codes.js --prefix BETA- 15 ./beta-codes.txt
+//        node generate-codes.js --prefix BETA- --format csv 15 ./beta-codes.csv
 
 import { writeFileSync } from 'fs';
 
@@ -14,16 +15,20 @@ function parseArgs() {
   let prefix = DEFAULT_PREFIX;
   let count = 100;
   let outputFile = './redeem-codes.txt';
+  let format = 'txt'; // txt | csv
 
   let i = 0;
   while (i < args.length) {
     if (args[i] === '--prefix') {
       prefix = args[i + 1];
       i += 2;
-    } else if (!count && /^\d+$/.test(args[i])) {
+    } else if (args[i] === '--format') {
+      format = args[i + 1];
+      i += 2;
+    } else if (/^\d+$/.test(args[i]) && count === 100) {
       count = parseInt(args[i], 10);
       i++;
-    } else if (!outputFile && !/^\d+$/.test(args[i]) && args[i] !== '--prefix') {
+    } else if (!/^(txt|csv)$/.test(args[i]) && args[i] !== '--prefix' && args[i] !== '--format') {
       outputFile = args[i];
       i++;
     } else {
@@ -31,15 +36,7 @@ function parseArgs() {
     }
   }
 
-  // 位置参数处理：如果数量未设置但第一个非 --prefix 参数是数字
-  const positional = args.filter(a => a !== '--prefix' && !args.includes(a, args.indexOf('--prefix') + 1));
-  const numericArgs = positional.filter(a => /^\d+$/.test(a));
-  const pathArgs = positional.filter(a => !/^\d+$/.test(a));
-
-  if (numericArgs.length > 0 && !count) count = parseInt(numericArgs[0], 10);
-  if (pathArgs.length > 0 && outputFile === './redeem-codes.txt') outputFile = pathArgs[0];
-
-  return { prefix, count, outputFile };
+  return { prefix, count, outputFile, format };
 }
 
 function generateCode(prefix) {
@@ -90,10 +87,17 @@ function verifyCode(code, prefix) {
   return checksum === CODE_CHARS.indexOf(body[7]);
 }
 
-// 主程序
-const { prefix, count, outputFile } = parseArgs();
+function toCSV(codes, prefix) {
+  const today = new Date().toISOString().split('T')[0];
+  const header = '序号,兑换码,状态,生成时间,备注\n';
+  const rows = codes.map((code, i) => `${i + 1},${code},未使用,${today},`).join('\n');
+  return header + rows;
+}
 
-console.log(`正在生成 ${count} 个兑换码... (前缀: ${prefix})\n`);
+// 主程序
+const { prefix, count, outputFile, format } = parseArgs();
+
+console.log(`正在生成 ${count} 个兑换码... (前缀: ${prefix}, 格式: ${format})\n`);
 
 const codes = generateCodes(count, prefix);
 
@@ -107,10 +111,15 @@ codes.slice(0, 10).forEach((code, i) => {
   console.log(`  ${i + 1}. ${code}`);
 });
 
-// 写入文件（带注释头）
+// 写入文件
 const today = new Date().toISOString().split('T')[0];
-const header = `# Prefix: ${prefix} | Count: ${count} | Generated: ${today}\n`;
-const content = header + codes.join('\n');
+let content;
+if (format === 'csv') {
+  content = toCSV(codes, prefix);
+} else {
+  const header = `# Prefix: ${prefix} | Count: ${count} | Generated: ${today}\n`;
+  content = header + codes.join('\n');
+}
 writeFileSync(outputFile, content);
 console.log(`\n✓ 已保存到: ${outputFile}`);
 console.log(`\n兑换码格式: ${prefix}XXXXXXXX`);
