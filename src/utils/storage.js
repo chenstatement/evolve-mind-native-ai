@@ -139,8 +139,32 @@ export function setUnlocked(code) {
   if (!verifyRedeemCode(code)) return false;
   const progress = getProgress();
   progress.unlocked = true;
+  progress.redeem_code = code.trim();
   saveProgress(progress);
   return true;
+}
+
+// === Beta Feedback System ===
+
+export function getBetaFeedback() {
+  try {
+    return JSON.parse(localStorage.getItem('beta_feedback') || 'null');
+  } catch {
+    return null;
+  }
+}
+
+export function setBetaFeedback(data) {
+  localStorage.setItem('beta_feedback', JSON.stringify({
+    ...data,
+    timestamp: Date.now()
+  }));
+}
+
+export function isBetaUser() {
+  const progress = getProgress();
+  const code = progress.redeem_code || '';
+  return code.toUpperCase().startsWith('BETA-');
 }
 
 // === Difficulty System ===

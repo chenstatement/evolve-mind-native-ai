@@ -1,18 +1,30 @@
 import { useState } from 'react'
-import { getProgress, isUnlocked, setUnlocked } from '../utils/storage'
+import { getProgress, isUnlocked, setUnlocked, isBetaUser } from '../utils/storage'
 
 export default function Profile({ progress, onBack, onAIConfig, onCertificate }) {
   const totalScore = Object.values(progress.scores).reduce((a, b) => a + b, 0)
   const completed = progress.completedLessons.length
   const unlocked = isUnlocked()
+  const beta = isBetaUser()
   const [redeemCode, setRedeemCode] = useState('')
   const [redeemStatus, setRedeemStatus] = useState(null)
+
+  const FEEDBACK_URL = 'https://wj.qq.com/s2/PLACEHOLDER/PLACEHOLDER'
 
   return (
     <div className="min-h-screen bg-cream px-5 pt-6 pb-24">
       <button onClick={onBack} className="text-ink-light text-sm mb-4 flex items-center gap-1">
         ← 返回
       </button>
+
+      {/* Beta thank-you banner */}
+      {beta && (
+        <div className="bg-gold-bg rounded-xl p-3 mb-4 text-center animate-fade-in">
+          <p className="text-xs text-ink-light">
+            感谢参与内测！你的反馈将帮助我们做得更好。
+          </p>
+        </div>
+      )}
 
       {/* Avatar */}
       <div className="text-center mb-6">
@@ -21,6 +33,11 @@ export default function Profile({ progress, onBack, onAIConfig, onCertificate })
         </div>
         <h1 className="text-xl font-bold text-ink">学习者</h1>
         <p className="text-sm text-ink-light">加入第 {progress.streak || 1} 天</p>
+        {beta && (
+          <span className="inline-flex items-center gap-1 mt-2 px-3 py-1 bg-gold-bg rounded-full text-xs font-medium text-gold">
+            🌟 种子用户
+          </span>
+        )}
       </div>
 
       {/* Stats */}
@@ -96,11 +113,24 @@ export default function Profile({ progress, onBack, onAIConfig, onCertificate })
           </button>
         </div>
         <div className="p-4 border-b border-gray-50 flex justify-between items-center">
+          <span className="text-sm text-ink">反馈建议</span>
+          <a
+            href={FEEDBACK_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-gold px-3 py-1 border border-gold/30 rounded-lg inline-block"
+          >
+            填写问卷
+          </a>
+        </div>
+        <div className="p-4 border-b border-gray-50 flex justify-between items-center">
           <span className="text-sm text-ink">清除学习进度</span>
           <button
             onClick={() => {
               if (confirm('确定要清除所有学习进度吗？')) {
                 localStorage.removeItem('evolve-mind-camp')
+                localStorage.removeItem('beta_feedback')
+                localStorage.removeItem('beta_rating_shown')
                 window.location.reload()
               }
             }}
@@ -111,7 +141,7 @@ export default function Profile({ progress, onBack, onAIConfig, onCertificate })
         </div>
         <div className="p-4 flex justify-between items-center">
           <span className="text-sm text-ink">关于</span>
-          <span className="text-xs text-ink-light">思维进化训练营 v1.0</span>
+          <span className="text-xs text-ink-light">思维进化训练营 v1.1</span>
         </div>
       </div>
     </div>
